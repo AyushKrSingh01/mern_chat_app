@@ -2,25 +2,29 @@ import { useState } from 'react';
 import { useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import RoomList from './components/RoomList';
-import ChatTest from './components/ChatTest';
+import Chat from './components/Chat';
+
+interface SelectedRoom {
+  id: number;
+  name: string;
+}
 
 function App() {
   const { user } = useAuth();
-  const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<SelectedRoom | null>(null);
 
-  if (!user) {
-    return <Login />;
-  }
+  if (!user) return <Login />;
 
-  if (!selectedRoomId) {
-    return <RoomList onSelectRoom={setSelectedRoomId} />;
+  if (!selectedRoom) {
+    return <RoomList onSelectRoom={(id, name) => setSelectedRoom({ id, name })} />;
   }
 
   return (
-    <div>
-      <button onClick={() => setSelectedRoomId(null)}>← Back to rooms</button>
-      <ChatTest roomId={selectedRoomId} />
-    </div>
+    <Chat
+      roomId={selectedRoom.id}
+      roomName={selectedRoom.name}
+      onBack={() => setSelectedRoom(null)}
+    />
   );
 }
 

@@ -10,6 +10,7 @@ import { ServerToClientEvents, ClientToServerEvents, InterServerEvents, SocketDa
 import { socketAuthMiddleware } from './middleware/socketAuth';
 import roomRoutes from './routes/roomRoutes';
 dotenv.config();
+import userRoutes from './routes/userRoutes';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/rooms', roomRoutes
 );
+app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 
 app.get('/api/db-check', async (req, res) => {

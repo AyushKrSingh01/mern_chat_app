@@ -9,7 +9,8 @@ interface Room {
   isGroup: boolean;
 }
 
-export default function RoomList({ onSelectRoom }: { onSelectRoom: (roomId: number) => void }) {
+export default function RoomList({ onSelectRoom }: { onSelectRoom: (roomId: number, roomName: string) => void }) {
+
   const { token, user } = useAuth();
   const [rooms, setRooms] = useState<Room[]>([]);
 
@@ -32,7 +33,7 @@ export default function RoomList({ onSelectRoom }: { onSelectRoom: (roomId: numb
       <ul>
         {rooms.map((room) => (
           <li key={room.id}>
-            <button onClick={() => onSelectRoom(room.id)}>{room.name}</button>
+           <button onClick={() => onSelectRoom(room.id, room.name)}>{room.name}</button>
           </li>
         ))}
       </ul>
