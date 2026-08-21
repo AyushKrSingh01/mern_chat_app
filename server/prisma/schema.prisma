@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int          @id @default(autoincrement())
+  username     String       @unique
+  email        String       @unique
+  passwordHash String       @map("password_hash")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  roomMembers  RoomMember[]
+  messages     Message[]
+
+  @@map("users")
+}
+
+model Room {
+  id        Int          @id @default(autoincrement())
+  name      String
+  isGroup   Boolean      @default(false) @map("is_group")
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  members   RoomMember[]
+  messages  Message[]
+
+  @@map("rooms")
+}
+
+model RoomMember {
+  roomId   Int      @map("room_id")
+  userId   Int      @map("user_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  room     Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([roomId, userId])
+  @@map("room_members")
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  roomId    Int      @map("room_id")
+  senderId  Int?     @map("sender_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender    User?    @relation(fields: [senderId], references: [id], onDelete: SetNull)
+
+  @@map("messages")
+}

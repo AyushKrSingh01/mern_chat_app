@@ -3,6 +3,7 @@ import http from 'http';
 import cors from 'cors';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
+import { prisma } from './db';
 
 dotenv.config();
 
@@ -15,8 +16,9 @@ const io = new Server(server, {
   cors: { origin: 'http://localhost:5173' }
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+app.get('/api/db-check', async (req, res) => {
+  const userCount = await prisma.user.count();
+  res.json({ userCount });
 });
 
 io.on('connection', (socket) => {
