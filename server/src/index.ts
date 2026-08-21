@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import { prisma } from './db';
 import authRoutes from './routes/authRoutes';
 import { requireAuth, AuthRequest } from './middleware/authMiddleware';
+import { ServerToClientEvents, ClientToServerEvents, InterServerEvents, SocketData } from './types/socketEvents';
+import { socketAuthMiddleware } from './middleware/socketAuth';
 
 dotenv.config();
 
@@ -26,14 +28,19 @@ app.get('/api/me', requireAuth, (req: AuthRequest, res) => {
 });
 
 const server = http.createServer(app);
-const io = new Server(server, {
+const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server, {
   cors: { origin: 'http://localhost:5173' },
 });
 
+io.use(socketAuthMiddleware);
+
 io.on('connection', (socket) => {
-  console.log('New client connected:', socket.id);
+  console.log(`Client connected: ${socket.id} (user: ${socket.data.username}, id: ${socket.data.userId})`);
+
+  socket.emit('connected', { message: `Welcome, ${socket.data.username}!` });
+
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+    console.log(`Client disconnected: ${socket.id} (user: ${socket.data.username})`);
   });
 });
 
