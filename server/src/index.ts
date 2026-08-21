@@ -100,6 +100,20 @@ io.on('connection', (socket) => {
       socket.emit('error_message', { error: 'Failed to send message' });
     }
   });
+    socket.on('typing', (roomId) => {
+    socket.to(`room:${roomId}`).emit('user_typing', {
+      userId: socket.data.userId,
+      username: socket.data.username,
+      roomId,
+    });
+  });
+
+   socket.on('stop_typing', (roomId) => {
+    socket.to(`room:${roomId}`).emit('user_stopped_typing', {
+      userId: socket.data.userId,
+      roomId,
+    });
+  });
 
   socket.on('disconnect', () => {
     console.log(`Client disconnected: ${socket.id} (user: ${socket.data.username})`);

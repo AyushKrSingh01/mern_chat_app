@@ -12,11 +12,15 @@ export interface ServerToClientEvents {
   receive_message: (message: MessagePayload) => void;
   user_joined: (data: { userId: number; username: string; roomId: number }) => void;
   error_message: (data: { error: string }) => void;
+  user_typing: (data: { userId: number; username: string; roomId: number }) => void;
+  user_stopped_typing: (data: { userId: number; roomId: number }) => void;
 }
 
 export interface ClientToServerEvents {
   join_room: (roomId: number) => void;
   send_message: (data: { roomId: number; content: string }) => void;
+  typing: (roomId: number) => void;
+  stop_typing: (roomId: number) => void;
 }
 
 export interface InterServerEvents {}
